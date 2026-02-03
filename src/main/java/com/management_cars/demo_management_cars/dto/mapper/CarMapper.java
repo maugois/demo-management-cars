@@ -1,7 +1,7 @@
 package com.management_cars.demo_management_cars.dto.mapper;
 
-import com.management_cars.demo_management_cars.dto.carDTO.CarRequestDTO;
-import com.management_cars.demo_management_cars.dto.carDTO.CarResponseDTO;
+import com.management_cars.demo_management_cars.dto.request.carDTO.CarRequestDTO;
+import com.management_cars.demo_management_cars.dto.response.carDTO.CarResponseDTO;
 import com.management_cars.demo_management_cars.entity.Car;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

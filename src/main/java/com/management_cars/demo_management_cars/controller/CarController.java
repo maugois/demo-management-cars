@@ -1,17 +1,14 @@
 package com.management_cars.demo_management_cars.controller;
 
-import com.management_cars.demo_management_cars.dto.carDTO.CarRequestDTO;
-import com.management_cars.demo_management_cars.dto.carDTO.CarResponseDTO;
+import com.management_cars.demo_management_cars.dto.request.carDTO.CarRequestDTO;
+import com.management_cars.demo_management_cars.dto.response.carDTO.CarResponseDTO;
 import com.management_cars.demo_management_cars.dto.mapper.CarMapper;
-import com.management_cars.demo_management_cars.dto.mapper.PageableMapper;
-import com.management_cars.demo_management_cars.dto.pageableDTO.PageableDTO;
 import com.management_cars.demo_management_cars.entity.Car;
 import com.management_cars.demo_management_cars.service.CarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,32 +21,37 @@ public class CarController {
     private final CarService carService;
 
     @PostMapping
-    public ResponseEntity<CarResponseDTO> create (@Valid @RequestBody CarRequestDTO carRequestDTO) {
-        Car car = carService.save(CarMapper.toCar(carRequestDTO));
+    public ResponseEntity<CarResponseDTO> create (@Valid @RequestBody CarRequestDTO dto) {
+        Car car = carService.save(CarMapper.toCar(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(CarMapper.toDto(car));
     }
 
     @GetMapping
-    public ResponseEntity<PageableDTO> getAll (@PageableDefault(size = 5, sort = {"model"}) Pageable pageable) {
-        Page<CarResponseDTO> cars = carService.getAll(pageable);
-        return ResponseEntity.ok(PageableMapper.toDto(cars));
+    public ResponseEntity<Page<CarResponseDTO>> getAll(
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) Integer year,
+            Pageable pageable
+    ) {
+        Page<CarResponseDTO> page = carService.getAll(brand, model, year, pageable);
+        return ResponseEntity.ok(page);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<CarResponseDTO> getById (@Valid @RequestBody Long idCar) {
-//        Car car = carService.save(CarMapper.toCar(idCar));
-//        return ResponseEntity.status(HttpStatus.CREATED).body(CarMapper.toDto(car));
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<CarResponseDTO> update (@Valid @RequestBody CarRequestDTO carRequestDTO) {
-//        Car car = carService.save(CarMapper.toCar(carRequestDTO));
-//        return ResponseEntity.status(HttpStatus.CREATED).body(CarMapper.toDto(car));
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<CarResponseDTO> delete (@Valid @RequestBody CarRequestDTO carRequestDTO) {
-//        Car car = carService.save(CarMapper.toCar(carRequestDTO));
-//        return ResponseEntity.status(HttpStatus.CREATED).body(CarMapper.toDto(car));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<CarResponseDTO> getById(@PathVariable Long id) {
+        Car car = carService.getById(id);
+        return ResponseEntity.ok(CarMapper.toDto(car));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CarResponseDTO> update(@PathVariable Long id, @Valid @RequestBody CarRequestDTO dto) {
+        Car car = carService.update(id, CarMapper.toCar(dto));
+        return ResponseEntity.ok(CarMapper.toDto(car));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        carService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

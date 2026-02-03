@@ -1,6 +1,6 @@
 package com.management_cars.demo_management_cars.dto.mapper;
 
-import com.management_cars.demo_management_cars.dto.pageableDTO.PageableDTO;
+import com.management_cars.demo_management_cars.dto.pageable.PageableDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;

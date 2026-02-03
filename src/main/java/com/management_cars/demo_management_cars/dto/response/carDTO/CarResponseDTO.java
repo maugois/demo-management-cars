@@ -1,4 +1,4 @@
-package com.management_cars.demo_management_cars.dto.carDTO;
+package com.management_cars.demo_management_cars.dto.response.carDTO;
 
 import java.util.Date;
 

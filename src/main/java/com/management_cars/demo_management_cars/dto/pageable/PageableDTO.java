@@ -1,4 +1,4 @@
-package com.management_cars.demo_management_cars.dto.pageableDTO;
+package com.management_cars.demo_management_cars.dto.pageable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
