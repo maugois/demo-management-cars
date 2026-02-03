@@ -1,20 +1,20 @@
 package com.management_cars.demo_management_cars.dto.request.carDTO;
 
+import com.management_cars.demo_management_cars.entity.Car;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.Date;
+import jakarta.validation.constraints.NotNull;
 
 public record CarRequestDTO(
-        @NotBlank
+        @NotBlank(message = "O modelo é obrigatório")
         String model,
 
-        @NotBlank
+        @NotBlank(message = "A marca é obrigatória")
         String brand,
 
-        @NotBlank
+        @NotBlank(message = "A cor é obrigatória")
         String color,
 
-        @NotBlank
-        Date year
+        @NotNull(message = "O ano é obrigatório")
+        Integer year
 ) {
 }

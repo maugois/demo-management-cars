@@ -10,10 +10,20 @@ import org.modelmapper.ModelMapper;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CarMapper {
     public static Car toCar(CarRequestDTO dto) {
-        return new ModelMapper().map(dto, Car.class);
+            Car car = new Car();
+            car.setModel(dto.model());
+            car.setBrand(dto.brand());
+            car.setColor(dto.color());
+            car.setYear(dto.year());
+            return car;
     }
 
     public static CarResponseDTO toDto(Car car) {
-        return new ModelMapper().map(car, CarResponseDTO.class);
+        return new CarResponseDTO(
+                car.getModel(),
+                car.getBrand(),
+                car.getColor(),
+                car.getYear()
+        );
     }
 }

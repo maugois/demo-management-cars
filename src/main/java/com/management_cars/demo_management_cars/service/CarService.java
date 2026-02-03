@@ -1,8 +1,10 @@
 package com.management_cars.demo_management_cars.service;
 
 import com.management_cars.demo_management_cars.dto.mapper.CarMapper;
+import com.management_cars.demo_management_cars.dto.request.carDTO.CarUpdateDTO;
 import com.management_cars.demo_management_cars.dto.response.carDTO.CarResponseDTO;
 import com.management_cars.demo_management_cars.entity.Car;
+import com.management_cars.demo_management_cars.exception.EntityNotFoundException;
 import com.management_cars.demo_management_cars.repository.CarRepository;
 import com.management_cars.demo_management_cars.repository.specification.CarSpecification;
 import lombok.RequiredArgsConstructor;
@@ -24,36 +26,46 @@ public class CarService {
         try {
             return carRepository.save(car);
         } catch (DataIntegrityViolationException ex) {
-            throw new RuntimeException();
+            throw new EntityNotFoundException("Envio incorreto dos dados");
         }
     }
 
     @Transactional(readOnly = true)
-    public Page<CarResponseDTO> getAll(String brand, String model, Integer year, Pageable pageable) {
+    public Page<CarResponseDTO> getAll(String model, String brand, Integer year, Pageable pageable) {
 
-        Specification<Car> spec = Specification
-                .where(CarSpecification.brandLike(brand))
-                .and(CarSpecification.modelLike(model))
-                .and(CarSpecification.yearEquals(year));
+        Specification<Car> spec = CarSpecification.filter(brand, model, year);
+        Page<Car> cars;
 
-        return carRepository.findAll(spec, pageable)
-                .map(CarMapper::toDto);
+        if (spec == null) {
+            cars = carRepository.findAll(pageable);
+        } else {
+            cars = carRepository.findAll(spec, pageable);
+        }
+
+        return cars.map(CarMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Car getById(Long id) {
-        return carRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carro não encontrado"));
+        return carRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Carro com id " + id + " não encontrado")
+        );
     }
 
-    @Transactional
-    public Car update(Long id, Car car) {
-        Car existing = getById(id);
-        existing.setBrand(car.getBrand());
-        existing.setModel(car.getModel());
-        existing.setYear(car.getYear());
-        return carRepository.save(existing);
-    }
+//    @Transactional
+//    public Car update(Long id, Car car) {
+//        Optional<Car> carUpdate = carRepository.findById(id).orElseThrow();
+//
+//        if ()
+//
+//        Car existing = getById(id);
+//        existing.setBrand(car.getBrand());
+//        existing.setColor(car.getColor());
+//        existing.setModel(car.getModel());
+//        existing.setYear(car.getYear());
+//
+//        return carRepository.save(existing);
+//    }
 
     @Transactional
     public void delete(Long id) {
