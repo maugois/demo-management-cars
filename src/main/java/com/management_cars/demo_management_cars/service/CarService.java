@@ -1,9 +1,10 @@
 package com.management_cars.demo_management_cars.service;
 
 import com.management_cars.demo_management_cars.dto.mapper.CarMapper;
-import com.management_cars.demo_management_cars.dto.request.carDTO.CarUpdateDTO;
+import com.management_cars.demo_management_cars.dto.request.carDTO.CarUpdateRequestDTO;
 import com.management_cars.demo_management_cars.dto.response.carDTO.CarResponseDTO;
 import com.management_cars.demo_management_cars.entity.Car;
+import com.management_cars.demo_management_cars.exception.BadRequestException;
 import com.management_cars.demo_management_cars.exception.EntityNotFoundException;
 import com.management_cars.demo_management_cars.repository.CarRepository;
 import com.management_cars.demo_management_cars.repository.specification.CarSpecification;
@@ -26,7 +27,7 @@ public class CarService {
         try {
             return carRepository.save(car);
         } catch (DataIntegrityViolationException ex) {
-            throw new EntityNotFoundException("Envio incorreto dos dados");
+            throw new BadRequestException("Dados inválidos ou violação de integridade");
         }
     }
 
@@ -52,20 +53,36 @@ public class CarService {
         );
     }
 
-//    @Transactional
-//    public Car update(Long id, Car car) {
-//        Optional<Car> carUpdate = carRepository.findById(id).orElseThrow();
-//
-//        if ()
-//
-//        Car existing = getById(id);
-//        existing.setBrand(car.getBrand());
-//        existing.setColor(car.getColor());
-//        existing.setModel(car.getModel());
-//        existing.setYear(car.getYear());
-//
-//        return carRepository.save(existing);
-//    }
+    @Transactional
+    public Car update(Long id, CarUpdateRequestDTO dto) {
+        Car existing = getById(id);
+
+        if (dto.brand() != null) {
+            if (dto.brand().isBlank())
+                throw new BadRequestException("Marca não pode ser vazia");
+            existing.setBrand(dto.brand());
+        }
+
+        if (dto.model() != null) {
+            if (dto.model().isBlank())
+                throw new BadRequestException("Modelo não pode ser vazio");
+            existing.setModel(dto.model());
+        }
+
+        if (dto.color() != null) {
+            if (dto.color().isBlank())
+                throw new BadRequestException("Cor não pode ser vazia");
+            existing.setColor(dto.color());
+        }
+
+        if (dto.year() != null) {
+            if (dto.year() < 1886)
+                throw new BadRequestException("Ano inválido");
+            existing.setYear(dto.year());
+        }
+
+        return carRepository.save(existing);
+    }
 
     @Transactional
     public void delete(Long id) {
