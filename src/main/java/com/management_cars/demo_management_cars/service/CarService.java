@@ -33,8 +33,7 @@ public class CarService {
         try {
             return carRepository.save(car);
         } catch (DataIntegrityViolationException ex) {
-            log.warn("Violação de integridade ao salvar carro: model={}, brand={}",
-                    car.getModel(), car.getBrand());
+            log.warn("Violação de integridade ao salvar carro", ex);
 
             throw new BadRequestException("Dados inválidos ou violação de integridade");
         }
