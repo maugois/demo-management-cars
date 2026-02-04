@@ -9,6 +9,7 @@ import com.management_cars.demo_management_cars.exception.EntityNotFoundExceptio
 import com.management_cars.demo_management_cars.repository.CarRepository;
 import com.management_cars.demo_management_cars.repository.specification.CarSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CarService {
@@ -24,15 +26,25 @@ public class CarService {
 
     @Transactional
     public Car save(Car car) {
+
+        log.info("Criando carro: model={}, brand={}, year={}",
+                car.getModel(), car.getBrand(), car.getYear());
+
         try {
             return carRepository.save(car);
         } catch (DataIntegrityViolationException ex) {
+            log.warn("Violação de integridade ao salvar carro: model={}, brand={}",
+                    car.getModel(), car.getBrand());
+
             throw new BadRequestException("Dados inválidos ou violação de integridade");
         }
     }
 
     @Transactional(readOnly = true)
     public Page<CarResponseDTO> getAll(String model, String brand, Integer year, Pageable pageable) {
+
+        log.debug("Buscando carros com filtros: model={}, brand={}, year={}",
+                model, brand, year);
 
         Specification<Car> spec = CarSpecification.filter(brand, model, year);
         Page<Car> cars;
@@ -48,6 +60,9 @@ public class CarService {
 
     @Transactional(readOnly = true)
     public Car getById(Long id) {
+
+        log.warn("Carro não encontrado: id={}", id);
+
         return carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Carro com id " + id + " não encontrado")
         );
@@ -55,29 +70,44 @@ public class CarService {
 
     @Transactional
     public Car update(Long id, CarUpdateRequestDTO dto) {
+
+        log.info("Atualizando carro: id={}", id);
+
         Car existing = getById(id);
 
         if (dto.brand() != null) {
-            if (dto.brand().isBlank())
+            if (dto.brand().isBlank()) {
+                log.warn("Marca vazia no update do carro id={}", id);
                 throw new BadRequestException("Marca não pode ser vazia");
+            }
+
             existing.setBrand(dto.brand());
         }
 
         if (dto.model() != null) {
-            if (dto.model().isBlank())
+            if (dto.model().isBlank()) {
+                log.warn("Modelo vazio no update do carro id={}", id);
                 throw new BadRequestException("Modelo não pode ser vazio");
+            }
+
             existing.setModel(dto.model());
         }
 
         if (dto.color() != null) {
-            if (dto.color().isBlank())
+            if (dto.color().isBlank()) {
+                log.warn("Cor vazia no update do carro id={}", id);
                 throw new BadRequestException("Cor não pode ser vazia");
+            }
+
             existing.setColor(dto.color());
         }
 
         if (dto.year() != null) {
-            if (dto.year() < 1886)
+            if (dto.year() < 1850) {
+                log.warn("Ano inválido ({}) no update do carro id={}", dto.year(), id);
                 throw new BadRequestException("Ano inválido");
+            }
+
             existing.setYear(dto.year());
         }
 
@@ -86,6 +116,7 @@ public class CarService {
 
     @Transactional
     public void delete(Long id) {
+        log.info("Removendo carro: id={}", id);
         Car car = getById(id);
         carRepository.delete(car);
     }
