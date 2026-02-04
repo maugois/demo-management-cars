@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/carros")
+@RequestMapping("api/v1/cars")
 public class CarController {
 
     private final CarService carService;

@@ -32,7 +32,7 @@ public class CarService {
 
         try {
             return carRepository.save(car);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (Exception ex) {
             log.warn("Violação de integridade ao salvar carro", ex);
 
             throw new BadRequestException("Dados inválidos ou violação de integridade");

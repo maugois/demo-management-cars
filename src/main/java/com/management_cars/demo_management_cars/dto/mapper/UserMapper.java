@@ -5,15 +5,22 @@ import com.management_cars.demo_management_cars.dto.response.userDTO.UserRespons
 import com.management_cars.demo_management_cars.entity.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
     public static User toUser(UserRequestDTO dto) {
-        return new ModelMapper().map(dto, User.class);
+        User user = new User();
+        user.setName(dto.name());
+        user.setEmail(dto.email());
+        user.setPassword(dto.password());
+        return user;
     }
 
     public static UserResponseDTO toDto(User user) {
-        return new ModelMapper().map(user, UserResponseDTO.class);
+        return new UserResponseDTO(
+                user.getName(),
+                user.getEmail(),
+                user.getPassword()
+        );
     }
 }

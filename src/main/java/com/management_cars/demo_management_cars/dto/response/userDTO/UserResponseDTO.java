@@ -1,4 +1,7 @@
 package com.management_cars.demo_management_cars.dto.response.userDTO;
 
-public record UserResponseDTO() {
+public record UserResponseDTO(
+        String name,
+        String email,
+        String password) {
 }
