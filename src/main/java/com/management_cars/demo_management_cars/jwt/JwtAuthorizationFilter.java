@@ -1,0 +1,78 @@
+package com.management_cars.demo_management_cars.jwt;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.token.TokenService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
+
+    private final TokenService tokenService;
+    private final UserDetailsService userDetailsService;
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String authHeader = request.getHeader(AUTH_HEADER);
+
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.substring(BEARER_PREFIX.length());
+
+//        if (!tokenService.isTokenValid(token)) {
+//            log.warn("JWT inválido ou expirado. Path: {}", request.getRequestURI());
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        String username = tokenService.getUsername(token);
+//
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//
+//        UsernamePasswordAuthenticationToken authentication =
+//                UsernamePasswordAuthenticationToken.authenticated(
+//                        userDetails,
+//                        null,
+//                        userDetails.getAuthorities()
+//                );
+//
+//        authentication.setDetails(
+//                new WebAuthenticationDetailsSource().buildDetails(request)
+//        );
+//
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        log.debug("Usuário '{}' autenticado com sucesso", username);
+//
+//        filterChain.doFilter(request, response);
+    }
+}
