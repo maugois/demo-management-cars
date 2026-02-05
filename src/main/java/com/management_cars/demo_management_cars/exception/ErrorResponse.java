@@ -32,21 +32,19 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public ErrorResponse(HttpServletRequest request, HttpStatus status, String message, BindingResult result, MessageSource messageSource) {
+    public ErrorResponse(HttpServletRequest request, HttpStatus status, String message, BindingResult result) {
         this.path = request.getRequestURI();
         this.method = request.getMethod();
         this.status = status.value();
         this.statusText = status.getReasonPhrase();
         this.message = message;
-        addErrors(result, messageSource, request.getLocale());
+        addErrors(result);
     }
 
-    private void addErrors(BindingResult result, MessageSource messageSource, Locale locale) {
+    private void addErrors(BindingResult result) {
         this.errors = new HashMap<>();
         for (FieldError fieldError : result.getFieldErrors()) {
-            String code = fieldError.getCodes()[0];
-            String message = messageSource.getMessage(code, fieldError.getArguments(), locale);
-            this.errors.put(fieldError.getField(), message);
+            this.errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
     }
 }

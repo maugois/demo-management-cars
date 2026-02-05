@@ -79,8 +79,7 @@ public class GlobalExceptionHandler {
                 request,
                 HttpStatus.BAD_REQUEST,
                 "Dados inválidos",
-                ex.getBindingResult(),
-                messageSource
+                ex.getBindingResult()
         );
 
         return ResponseEntity.badRequest().body(error);
