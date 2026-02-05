@@ -10,12 +10,13 @@ import com.management_cars.demo_management_cars.repository.CarRepository;
 import com.management_cars.demo_management_cars.repository.specification.CarSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +30,13 @@ public class CarService {
 
         log.info("Criando carro: model={}, brand={}, year={}",
                 car.getModel(), car.getBrand(), car.getYear());
+
+        int yearMax = LocalDateTime.now().getYear() + 3;
+
+        if (car.getYear() < 1850 || car.getYear() > yearMax) {
+            log.warn("Ano inválido para carro: {}", car.getYear());
+            throw new BadRequestException("Ano inválido");
+        }
 
         try {
             return carRepository.save(car);
@@ -71,6 +79,7 @@ public class CarService {
     public Car update(Long id, CarUpdateRequestDTO dto) {
 
         log.info("Atualizando carro: id={}", id);
+        int yearMax = LocalDateTime.now().getYear() + 3;
 
         Car existing = getById(id);
 
@@ -102,7 +111,7 @@ public class CarService {
         }
 
         if (dto.year() != null) {
-            if (dto.year() < 1850) {
+            if (dto.year() < 1850 || dto.year() > yearMax) {
                 log.warn("Ano inválido ({}) no update do carro id={}", dto.year(), id);
                 throw new BadRequestException("Ano inválido");
             }
