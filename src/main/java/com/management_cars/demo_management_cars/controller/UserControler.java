@@ -50,7 +50,7 @@ public class UserControler {
             authenticationManager.authenticate(usernamePasswordAuthenticationToken);
             String token = customUserDetailsService.getTokenAuthenticated(dto.email());
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok("Token: " + token);
 
         } catch (AuthenticationException ex) {
             log.warn("Bad Credentials from email '{}'", dto.email());

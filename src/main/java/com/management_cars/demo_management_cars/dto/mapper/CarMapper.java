@@ -19,6 +19,7 @@ public class CarMapper {
 
     public static CarResponseDTO toDto(Car car) {
         return new CarResponseDTO(
+                car.getIdCar(),
                 car.getModel(),
                 car.getBrand(),
                 car.getColor(),
