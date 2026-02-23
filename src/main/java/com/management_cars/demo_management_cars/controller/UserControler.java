@@ -3,9 +3,11 @@ package com.management_cars.demo_management_cars.controller;
 import com.management_cars.demo_management_cars.dto.mapper.UserMapper;
 import com.management_cars.demo_management_cars.dto.request.userDTO.UserLoginDTO;
 import com.management_cars.demo_management_cars.dto.request.userDTO.UserRequestDTO;
+import com.management_cars.demo_management_cars.dto.response.userDTO.LoginResponseDTO;
 import com.management_cars.demo_management_cars.dto.response.userDTO.UserResponseDTO;
 import com.management_cars.demo_management_cars.entity.User;
 import com.management_cars.demo_management_cars.exception.ErrorResponse;
+import com.management_cars.demo_management_cars.repository.UserRepository;
 import com.management_cars.demo_management_cars.security.CustomUserDetailsService;
 import com.management_cars.demo_management_cars.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserControler {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -44,13 +47,21 @@ public class UserControler {
         log.debug("POST /api/v1/usuarios/auth");
 
         try {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+            UsernamePasswordAuthenticationToken authRequest =
                     new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
 
-            authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            authenticationManager.authenticate(authRequest);
             String token = customUserDetailsService.getTokenAuthenticated(dto.email());
+            var user = userRepository.findByEmail(dto.email()).orElseThrow();
 
-            return ResponseEntity.ok("Token: " + token);
+            LoginResponseDTO response = new LoginResponseDTO(
+                    user.getIdUser(),
+                    user.getName(),
+                    user.getEmail(),
+                    token
+            );
+
+            return ResponseEntity.ok(response);
 
         } catch (AuthenticationException ex) {
             log.warn("Bad Credentials from email '{}'", dto.email());
