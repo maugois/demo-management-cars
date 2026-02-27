@@ -10,6 +10,7 @@ import com.management_cars.demo_management_cars.exception.ErrorResponse;
 import com.management_cars.demo_management_cars.repository.UserRepository;
 import com.management_cars.demo_management_cars.security.CustomUserDetailsService;
 import com.management_cars.demo_management_cars.service.UserService;
+import com.management_cars.demo_management_cars.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,8 @@ public class UserControler {
                     user.getIdUser(),
                     user.getName(),
                     user.getEmail(),
-                    token
+                    token,
+                    JwtTokenUtils.getExpirationTimeInSeconds()
             );
 
             return ResponseEntity.ok(response);

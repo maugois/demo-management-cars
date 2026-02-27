@@ -24,6 +24,12 @@ public class JwtTokenUtils {
     private JwtTokenUtils() {
     }
 
+    public static long getExpirationTimeInSeconds() {
+        return (EXPIRE_DAYS * 24 * 60 * 60) +
+                (EXPIRE_HOURS * 60 * 60) +
+                (EXPIRE_MINUTES * 60);
+    }
+
     private static SecretKey generateKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
